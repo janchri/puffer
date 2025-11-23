@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Pufferspeicher</title>
+  <link rel="stylesheet" href="static/style.css">
+</head>
+<script src="/static/script.js" defer></script>
+<body>
+  <h1>Pufferspeicher</h1>
+
+  <div class="container-wrapper">
+    <div class="container">
+
+      <!-- Left side -->
+      <div class="image-container card">
+        <img src="/static/img/puffer_transparent.svg" alt="Puffer">
+
+        <div class="temp-bars" id="temp-bars">
+          <div class="temp-bar" style="top:38px;">
+            <div id="temp1" class="temp-bar-fill">0°C</div>
+          </div>
+          <div class="temp-bar" style="top:86px;">
+            <div id="temp2" class="temp-bar-fill">0°C</div>
+          </div>
+          <div class="temp-bar" style="top:159px;">
+            <div id="temp3" class="temp-bar-fill">0°C</div>
+          </div>
+          <div class="temp-bar" style="top:222px;">
+            <div id="temp4" class="temp-bar-fill">0°C</div>
+          </div>
+          <div class="temp-bar" style="top:286px;">
+            <div id="temp5" class="temp-bar-fill">0°C</div>
+          </div>
+          <div class="temp-bar" style="top:360px;">
+            <div id="temp6" class="temp-bar-fill">0°C</div>
+          </div>
+          <div class="temp-bar" style="top:425px;">
+            <div id="temp7" class="temp-bar-fill">0°C</div>
+          </div>
+          <div class="temp-bar" style="top:489px;">
+            <div id="temp8" class="temp-bar-fill">0°C</div>
+          </div>
+          <div class="temp-bar" style="top:552px;">
+            <div id="temp9" class="temp-bar-fill">0°C</div>
+          </div>
+          <div class="temp-bar" style="top:618px;">
+            <div id="temp10" class="temp-bar-fill">0°C</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Grafana -->
+      <div class="iframe-container card">
+        <iframe
+          src="https://grafana.hoerbie.eu/d-solo/ddinl24e9n8c0e/puffer-speicher?orgId=1&timezone=browser&refresh=5s&panelId=panel-1&__feature.dashboardSceneSolo=true"
+          allowfullscreen>
+        </iframe>
+      </div>
+
+    </div>
+  </div>
+</body>
+</html>

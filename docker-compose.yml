@@ -1,0 +1,11 @@
+services:
+  puffer-app:
+    build: .
+    container_name: puffer_app
+    ports:
+      - "${PORT}:${PORT}"
+    env_file:
+      - .env
+    volumes:
+      - ./config.ini:/app/config.ini:ro  # read-only mount for measurement mapping
+    command: sh -c "uvicorn main:app --host 0.0.0.0 --port ${PORT}"
