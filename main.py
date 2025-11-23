@@ -1,10 +1,17 @@
 import os
+from dotenv import load_dotenv
 import configparser
-from fastapi import FastAPI
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi import FastAPI, Request
+from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from influxdb_client import InfluxDBClient
+from fastapi.templating import Jinja2Templates
 import uvicorn
+
+load_dotenv()
+
+# Read PORT
+PORT = int(os.getenv("PORT", 7000))
 
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")
@@ -13,11 +20,14 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 config = configparser.ConfigParser()
 config.read("config.ini")
 
+# Setup templates folder
+templates = Jinja2Templates(directory="templates")
+
 # InfluxDB settings, token comes from env variable
-INFLUXDB_URL = os.getenv("INFLUXDB_URL", config["INFLUXDB"]["url"])
+INFLUXDB_URL = os.getenv("INFLUXDB_URL")
 INFLUXDB_TOKEN = os.getenv("INFLUXDB_TOKEN")  # must be set externally
-INFLUXDB_ORG = os.getenv("INFLUXDB_ORG", config["INFLUXDB"]["org"])
-INFLUXDB_BUCKET = os.getenv("INFLUXDB_BUCKET", config["INFLUXDB"]["bucket"])
+INFLUXDB_ORG = os.getenv("INFLUXDB_ORG")
+INFLUXDB_BUCKET = os.getenv("INFLUXDB_BUCKET")
 
 if not INFLUXDB_TOKEN:
     raise RuntimeError("INFLUXDB_TOKEN environment variable is required!")
@@ -29,14 +39,15 @@ query_api = client.query_api()
 raw_mapping = dict(config["MEASUREMENTS"])
 MEASUREMENT_MAPPING = {k.upper(): v for k, v in raw_mapping.items()}
 
-@app.get("/")
-def read_root():
-    return FileResponse("index.html")
+@app.get("/", response_class=HTMLResponse)
+def read_root(request: Request):
+    # Pass Grafana iframe src from config
+    grafana_src = config["GRAFANA"]["iframe_src"]
+    return templates.TemplateResponse("index.html", {"request": request, "grafana_src": grafana_src})
 
 @app.get("/api/temperatures/last")
 def get_last_temperature():
     measurements = list(MEASUREMENT_MAPPING.keys())
-    print(measurements)
     filter_str = " or ".join([f'r["_measurement"] == "{m}"' for m in measurements])
 
     flux_query = f'''
@@ -65,4 +76,4 @@ def get_last_temperature():
     return JSONResponse(content=last_values)
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run("main:app", host="0.0.0.0", port=PORT, reload=True)

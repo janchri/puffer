@@ -17,3 +17,12 @@ INFLUXDB_BUCKET=<YOURBUCKET>
 
 # Uvicorn port
 PORT=8080
+```
+
+## Running with Docker
+
+### Step 1: Build the Docker image
+
+```bash
+docker build -t puffer-app .
+```

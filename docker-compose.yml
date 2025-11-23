@@ -1,11 +1,23 @@
 services:
   puffer-app:
-    build: .
-    container_name: puffer_app
+    image: puffer-app:latest
+    container_name: puffer-app
     ports:
-      - "${PORT}:${PORT}"
+      - "7000:7000"
     env_file:
       - .env
     volumes:
-      - ./config.ini:/app/config.ini:ro  # read-only mount for measurement mapping
-    command: sh -c "uvicorn main:app --host 0.0.0.0 --port ${PORT}"
+      - ./config.ini:/app/config.ini:ro
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.puffer.rule=Host(`puffer.hoerbie.eu`)"
+      - "traefik.http.routers.puffer.entrypoints=websecure"
+      - "traefik.http.routers.puffer.tls=true"
+      - "traefik.http.routers.puffer.tls.certresolver=cloudflare"
+      - "traefik.http.services.puffer.loadbalancer.server.port=7000"
+      - "traefik.docker.network=web"
+    networks:
+      - web
+networks:
+  web:
+    external: true
